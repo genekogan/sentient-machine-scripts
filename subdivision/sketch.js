@@ -1,12 +1,14 @@
+
+
 var circles, rects;
 
 // Vera Molnar - multiple grids
 
-var frameInterval; // how many frames per segment
-var numMolnarGridsX;
-var numMolnarGridsY;
-var gridSizeX;
-var gridSizeY;
+var frameInterval = 4; // how many frames per segment
+var numMolnarGridsX = 16;
+var numMolnarGridsY = 16;
+var gridSizeX = 4;
+var gridSizeY = 4;
 
 var molnarGrids = [];
 var indexActive = 0;
@@ -19,29 +21,13 @@ var outputProb = 0;
 var translateX;
 var translateY;
 
-///RAND - GRID
-const g10 = Array(50).fill(8);
-const g16 = Array(30).fill(12);
+// /RAND - GRID
+const g10 = Array(50).fill(12);
+const g16 = Array(30).fill(14);
 const g24 = Array(15).fill(16);
 const g1 = Array(3).fill(20);
 const g34 = Array(2).fill(24);
 const gridProb = g1.concat(g24).concat(g16).concat(g10).concat(g34);
-
-const strokeWidth = {
-  1: 5,
-  10: 3,
-  16: 2,
-  24: 2,
-  34: 1
-};
-
-const margins = {
-  1: 30,
-  10: 20,
-  16: 15,
-  24: 10,
-  30: 5
-};
 
 var gridSize;
 
@@ -49,31 +35,30 @@ function setup()
 {
   createCanvas(800, 800);
   smooth();
-
   circles = false;
   rects = true;
-
   colorMode(random(1) > 0.3 ? (HSB) :  random(1) > 0.5 ? HSL : RGB);
-  const index = Math.floor(Math.random() * 100);
+  const index = Math.floor(Math.random() * 99);
   gridSize = gridProb[index];
 
-  const xRatio = 1;//Math.floor(Math.random() * 4);
-  const yRatio = 1;//Math.floor(Math.random() * 4);
+  const xRatio = Math.floor(random(1,4))//1//Math.floor(Math.random() * 4);
+  const yRatio = Math.floor(random(1,4))//1//Math.floor(Math.random() * 4);
   const xyRatio = xRatio/yRatio;
 
   //GRID_IDEOGRAMS
-  var numMolnarGridsX = gridSize * xyRatio
-  var numMolnarGridsY = gridSize / xyRatio
-  console.log(numMolnarGridsX);
+  var numMolnarGridsX = gridSize * xyRatio;
+  var numMolnarGridsY = gridSize / xyRatio;
+  console.log(Math.floor(random(1,4)));
 
   //GRID_SIZE_IN_CANVAS
-//  const randGridSizeRatio = Math.floor(Math.random() * 3);
-  const actualGridSizeRatio = 1//1/randGridSizeRatio;
+  const actualGridSizeRatio = 1/Math.floor(random(1,4));
   const gWidth = (width * actualGridSizeRatio) * xyRatio;
   const gHeight = (height * actualGridSizeRatio) / xyRatio;
 
+  const margin = 5;
+
   var ideogramSize = gWidth / numMolnarGridsX;
-  console.log(ideogramSize);
+  console.log(ideogramSize)
 
   for (var y=0; y<numMolnarGridsY; y++) {
     for (var x=0; x<numMolnarGridsX; x++) {
@@ -81,7 +66,6 @@ function setup()
       var my = map(y, 0, numMolnarGridsY, 0, gHeight);
       var mwidth = ideogramSize;
       var mheight = ideogramSize;
-      var margin = 10;
 
       var m = new MolnarGrid(mx, my, mwidth, mheight, gridSizeX, gridSizeY, margin);
       m.createOrder();
@@ -92,27 +76,27 @@ function setup()
   background(0);
 
   //RAND
-   const boxBaseColors = color( random(255), random(255), random(255));
-//  const boxBaseColors = color(random(255), random(150,255), random(150,255));
+  // const boxBaseColors = color( random(255), random(255), random(255));
+  const boxBaseColors = color(random(255), random(150,255), random(150,255));
   drawBox(10, 0, 0, width, height, boxBaseColors);
 
   //COLOUR
   var h2 = floor(hue(boxBaseColors) + 180) % 255;
   var s2 = floor(saturation(boxBaseColors) + 180) % 255;
   var b2 = floor(brightness(boxBaseColors) + 180) % 255;
-  // colorMode(HSL);
   const complementaryColor = color(h2, s2, b2);
 
   //BOX
   console.log(boxBaseColors, complementaryColor);
   const randColor = color(random(255), random(255), random(255));
-  symbolColor = random(1) > 0.5 ? complementaryColor : random(1) > 0.5 ? 255 : 0;
-  strokeWeight(strokeWidth[gridSize]);
+  symbolColor = random(1) > 0.5 ? randColor : random(1) > 0.5 ? 255 : 0;
+
+  strokeWeight(ideogramSize/50);
   colorMode(RGB);
-  noLoop();
-  drawAmoeba();
-  translateX = (width - gWidth)/2;
-  translateY = (height - gHeight)/2;
+  // noLoop();
+  // drawAmoeba();
+  translateX = (width - gWidth)/Math.floor(random(0,2));
+  translateY = (height - gHeight)/Math.floor(random(0,2));
 }
 
 function draw() {
@@ -149,34 +133,16 @@ function makeid(length) {
 }
 
 function drawSymbols () {
-  // translate(width/(1- random(1)), height/(1 - random(1)));
-//  translate(translateX, translateY);
+  translate(translateX, translateY);
   noFill();
   molnarGrids[indexActive].update();
 
   // check if it's done... if it is, set to update the next molnar grid
   if (molnarGrids[indexActive].isDone()) {
-
-    //
-    // RAND
-    //
-    if ((followingIndex % numMolnarGridsX) === 0) {
-      indexActive = indexActive + 1;
-      followingIndex ++;
-    }
-    else {
-      // const num = gridProb[index]
-      const num = Math.floor(Math.random() * 4);
-      indexActive = indexActive + num;
-      followingIndex ++;
-    }
-
-    indexActive = min(indexActive, molnarGrids.length-1);
-    //
-    // FULL DISPLAYING
-    //
     // indexActive = indexActive + 1;
-    // indexActive = min(indexActive, molnarGrids.length-1);
+    const num = Math.floor(Math.random() * 5);
+      indexActive = indexActive + num;
+    indexActive = min(indexActive, molnarGrids.length-1);
 
     if (indexActive === molnarGrids.length - 1 ) {
         console.log(count)
@@ -184,7 +150,7 @@ function drawSymbols () {
         const imageId = makeid(56)
         save(`${imageId}.png`);
         count --;
-        // location.reload();
+        location.reload();
     }
   }
 
@@ -247,3 +213,4 @@ function mousePressed() {
   }
   redraw();
 }
+
