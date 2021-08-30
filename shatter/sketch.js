@@ -88,7 +88,7 @@ class Zone {
     
     else {
       
-      var z1, z2;
+      var zone_child1, zone_child2;
       
       do {
         var n = this.pts.length;
@@ -142,33 +142,26 @@ class Zone {
         var areaTotal = areaConvexPolygon(this.pts);
         var areaPts1 = areaConvexPolygon(newPts1);
         
-        
       }
       
       while (areaPts1/areaTotal < pctMinimum || 
              areaPts1/areaTotal > (1.0-pctMinimum))
         
-    
       var newcol1 = perturbColor(this.col, gen*xh, gen*xs, gen*xb);
       var newcol2 = perturbColor(this.col, gen*xh, gen*xs, gen*xb);  
 
-      z1 = new Zone(newPts1, newcol1);
-      z2 = new Zone(newPts2, newcol2);
+      zone_child1 = new Zone(newPts1, newcol1);
+      zone_child2 = new Zone(newPts2, newcol2);
 
-      z1.draw(gen-1);
-      z2.draw(gen-1);
+      zone_child1.draw(gen-1);
+      zone_child2.draw(gen-1);
 
     }
   } 
 }
 
 
-
-function keyPressed() {
-  if (key==' ') {
-    setup();
-  }
-}
+// helper functions
 
 function perturbColor(col, h, s, b) {
   var h2 = floor(hue(col) + random(-h, h) + 255) % 255;
@@ -176,7 +169,6 @@ function perturbColor(col, h, s, b) {
   var b2 = floor(brightness(col) + random(-b, b) + 255) % 255;
   return color(h2, s2, b2);
 }
-
 
 function getCentroid(pts) {
   var n = pts.length;
@@ -206,7 +198,6 @@ function areaTriangle(A, B, C) {
     return (A[0] * (B[1] - C[1]) + B[0] * (C[1] - A[1]) + C[0] * (A[1] - B[1])) / 2
 }
 
-
 function linearRegression(data){
   var xsum = 0;
   var ysum = 0;
@@ -232,28 +223,4 @@ function linearRegression(data){
   m = num/den;
   b = ymean-m*xmean;
   return [m, b]
-}
-
-
-
-
-function drawLine(m, b, centroid){
-  var x1 = (centroid[0]-200)/width;
-  var y1 = m * x1 + b;
-  var x2 = (centroid[0]+200)/width;
-  var y2 = m * x2 + b;
-  
-  
-  x1 = map(x1, 0, 1, 0, width);
-  y1 = map(y1, 0, 1, 0, height);
-  x2 = map(x2, 0, 1, 0, width);
-  y2 = map(y2, 0, 1, 0, height);
-  
-  push();
-  //stroke(100, 50, 70);
-  strokeWeight(4)
-  line(x1, y1, x2, y2);
-  console.log("hello "+m+ " "+ b + " ")
-    console.log("from "+x1 + " " + y1 + " to " +x2 + " " +y2)
-  pop();
 }
