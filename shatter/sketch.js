@@ -1,3 +1,7 @@
+// traits
+grayscale = false
+grayscale_percentage = 0.05  // 5% change
+
 // parameters
 let numRecursions = 9;
 let pctMinimum = 0.3; // minimum area for each child, don't go above 0.49
@@ -14,15 +18,17 @@ let lenGradientMax = 100;
 var zone;
 
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(1024, 1024);
   colorMode(HSB);
   noLoop();
 
+
+  grayscale = random() < grayscale_percentage ? true : false;
   numRecursions = floor(random(6,10));
   pctMinimum = random(0.1, 0.45); // minimum area for each child, don't go above 0.49
-  xh = random(2.0, 3.2); // dispersion hue
-  xs = random(1.5, 4); // dispersion saturation
-  xb = random(1.5, 4); // dispersion brightness
+  xh = random(2.2, 3.2); // dispersion hue
+  xs = random(1.8, 4); // dispersion saturation
+  xb = random(1.8, 4); // dispersion brightness
   minSplitMargin = random(1.0);
   caveIn = random(0.2);
   caveInProbability = random(1);
@@ -165,7 +171,7 @@ class Zone {
 
 function perturbColor(col, h, s, b) {
   var h2 = floor(hue(col) + random(-h, h) + 255) % 255;
-  var s2 = floor(saturation(col) + random(-s, s) + 255) % 255;
+  var s2 = grayscale ? 0 : floor(saturation(col) + random(-s, s) + 255) % 255;
   var b2 = floor(brightness(col) + random(-b, b) + 255) % 255;
   return color(h2, s2, b2);
 }
